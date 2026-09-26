@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assessments | ExamHub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+        :root {
+            --paper: #eff1ea;
+            --surface: #fff;
+            --ink: #1e2a22;
+            --muted: #6c7568;
+            --line: #dadcd1;
+            --accent: #2f5d50;
+            --soft: #e3ece7;
+            --rust: #ae4f2e;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        header {
+            background: var(--ink);
+            padding: 14px max(24px, calc((100% - 1120px)/2));
+        }
+
+        header a {
+            color: #fff;
+            text-decoration: none;
+            font: 600 19px 'Fraunces', serif;
+        }
+
+        main {
+            max-width: 1120px;
+            margin: 38px auto;
+            padding: 0 24px;
+        }
+
+        .heading {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        h1 {
+            font: 600 28px 'Fraunces', serif;
+            margin: 0 0 4px;
+        }
+
+        .sub {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 8px 14px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            font: 600 13px 'IBM Plex Sans', sans-serif;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #20423a;
+        }
+
+        .button.secondary {
+            background: #fff;
+            color: var(--ink);
+            border-color: var(--line);
+        }
+
+        .button.delete {
+            min-height: 32px;
+            padding: 5px 10px;
+            background: #fff;
+            border-color: #e8cfc5;
+            color: var(--rust);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 680px;
+        }
+
+        th,
+        td {
+            padding: 13px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e7e8e0;
+        }
+
+        th {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 13.5px;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .title {
+            font-weight: 600;
+        }
+
+        .meta {
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: var(--soft);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .pill.DRAFT {
+            background: #ebece5;
+            color: var(--muted);
+        }
+
+        .pill.SCHEDULED {
+            background: #e7ecf1;
+            color: #3c5a80;
+        }
+
+        .pill.CLOSED {
+            background: #f4e3da;
+            color: var(--rust);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .empty {
+            padding: 52px 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        @media (max-width:600px) {
+            main {
+                margin: 24px auto;
+                padding: 0 14px;
+            }
+
+            .heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header><a th:href="@{/assessments}">ExamHub</a></header>
+    <main>
+        <div class="heading">
+            <div>
+                <h1>Assessments</h1>
+                <p class="sub">Create and manage exams and quizzes.</p>
+            </div>
+            <a class="button" th:href="@{/assessments/new}">+ Create assessment</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Assessment</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Schedule</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="assessment : ${assessments}">
+                        <td>
+                            <div class="title" th:text="${assessment.title}">Assessment title</div>
+                            <div class="meta" th:text="${assessment.description}">Description</div>
+                        </td>
+                        <td th:text="${assessment.type}">EXAM</td>
+                        <td><span class="pill" th:classappend="${assessment.status}"
+                                th:text="${assessment.status}">DRAFT</span></td>
+                        <td th:text="${assessment.startsAt != null ? assessment.startsAt : 'Not scheduled'}">Not
+                            scheduled</td>
+                        <td th:text="${assessment.durationMinutes != null ? assessment.durationMinutes + ' min' : '—'}">
+                            —</td>
+                        <td>
+                            <div class="actions">
+                                <a class="button secondary"
+                                    th:href="@{/assessments/edit/{id}(id=${assessment.id})}">Edit</a>
+                                <form th:action="@{/assessments/delete/{id}(id=${assessment.id})}" method="post"
+                                    onsubmit="return confirm('Delete this assessment?')">
+                                    <button class="button delete" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(assessments)}">
+                        <td class="empty" colspan="6">No assessments yet. Create one to get started.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>

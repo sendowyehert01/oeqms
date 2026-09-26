@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${assessment.id == null ? 'New Assessment' : 'Edit Assessment'} + ' | ExamHub'">Assessment | ExamHub
+    </title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+        :root {
+            --paper: #eff1ea;
+            --surface: #fff;
+            --ink: #1e2a22;
+            --muted: #6c7568;
+            --line: #dadcd1;
+            --accent: #2f5d50;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+
+        header {
+            background: var(--ink);
+            padding: 14px max(24px, calc((100% - 900px)/2));
+        }
+
+        header a {
+            color: #fff;
+            text-decoration: none;
+            font: 600 19px 'Fraunces', serif;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 34px auto;
+            padding: 0 24px;
+        }
+
+        h1 {
+            font: 600 27px 'Fraunces', serif;
+            margin: 0 0 5px;
+        }
+
+        .sub {
+            margin: 0 0 24px;
+            color: var(--muted);
+        }
+
+        form {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .section {
+            margin: 0 0 22px;
+            padding: 0 0 20px;
+            border-bottom: 1px solid #e7e8e0;
+        }
+
+        .section:last-of-type {
+            border-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin: 0 0 15px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .field.full {
+            grid-column: 1/-1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            min-height: 40px;
+            padding: 9px 11px;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            color: var(--ink);
+            background: #fff;
+            font: 14px 'IBM Plex Sans', sans-serif;
+        }
+
+        textarea {
+            min-height: 82px;
+            resize: vertical;
+        }
+
+        .checks {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px 20px;
+        }
+
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 13px;
+        }
+
+        .check input {
+            width: 16px;
+            min-height: 16px;
+            height: 16px;
+            margin: 0;
+            accent-color: var(--accent);
+        }
+
+        .check label {
+            margin: 0;
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            padding: 8px 15px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            font: 600 13px 'IBM Plex Sans', sans-serif;
+            cursor: pointer;
+        }
+
+        .button.secondary {
+            background: #fff;
+            color: var(--ink);
+            border-color: var(--line);
+        }
+
+        @media (max-width:620px) {
+            main {
+                margin: 24px auto;
+                padding: 0 14px;
+            }
+
+            form {
+                padding: 18px;
+            }
+
+            .grid,
+            .checks {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header><a th:href="@{/assessments}">ExamHub</a></header>
+    <main>
+        <h1 th:text="${assessment.id == null ? 'Create assessment' : 'Edit assessment'}">Create assessment</h1>
+        <p class="sub">Set the assessment details, availability, and learner options.</p>
+        <form th:action="@{/assessments/save}" th:object="${assessment}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <section class="section">
+                <h2>Details</h2>
+                <div class="grid">
+                    <div class="field full"><label for="title">Title</label><input id="title" th:field="*{title}"
+                            required maxlength="255"></div>
+                    <div class="field"><label for="type">Type</label><select id="type" th:field="*{type}">
+                            <option th:each="type : ${assessmentTypes}" th:value="${type}" th:text="${type}"></option>
+                        </select></div>
+                    <div class="field"><label for="status">Status</label><select id="status" th:field="*{status}">
+                            <option th:each="status : ${assessmentStatuses}" th:value="${status}" th:text="${status}">
+                            </option>
+                        </select></div>
+                    <div class="field full"><label for="description">Description</label><textarea id="description"
+                            th:field="*{description}"></textarea></div>
+                    <div class="field full"><label for="instructions">Instructions</label><textarea id="instructions"
+                            th:field="*{instructions}"></textarea></div>
+                </div>
+            </section>
+            <section class="section">
+                <h2>Availability and scoring</h2>
+                <div class="grid">
+                    <div class="field"><label for="startsAt">Starts at</label><input id="startsAt" type="datetime-local"
+                            th:field="*{startsAt}"></div>
+                    <div class="field"><label for="endsAt">Ends at</label><input id="endsAt" type="datetime-local"
+                            th:field="*{endsAt}"></div>
+                    <div class="field"><label for="durationMinutes">Duration (minutes)</label><input
+                            id="durationMinutes" type="number" min="1" th:field="*{durationMinutes}"></div>
+                    <div class="field"><label for="passingScore">Passing score (%)</label><input id="passingScore"
+                            type="number" min="0" max="100" step="0.01" th:field="*{passingScore}"></div>
+                    <div class="field"><label for="maxAttempts">Maximum attempts</label><input id="maxAttempts"
+                            type="number" min="1" th:field="*{maxAttempts}"></div>
+                    <div class="field"><label for="lateSubmissionMinutes">Late submission grace (minutes)</label><input
+                            id="lateSubmissionMinutes" type="number" min="0" th:field="*{lateSubmissionMinutes}"></div>
+                </div>
+            </section>
+            <section class="section">
+                <h2>Assessment options</h2>
+                <div class="checks">
+                    <div class="check"><input id="shuffleQuestions" type="checkbox"
+                            th:field="*{shuffleQuestions}"><label for="shuffleQuestions">Shuffle questions</label></div>
+                    <div class="check"><input id="shuffleOptions" type="checkbox" th:field="*{shuffleOptions}"><label
+                            for="shuffleOptions">Shuffle answer options</label></div>
+                    <div class="check"><input id="showResultsAfterSubmit" type="checkbox"
+                            th:field="*{showResultsAfterSubmit}"><label for="showResultsAfterSubmit">Show results after
+                            submission</label></div>
+                    <div class="check"><input id="showCorrectAnswers" type="checkbox"
+                            th:field="*{showCorrectAnswers}"><label for="showCorrectAnswers">Show correct
+                            answers</label></div>
+                    <div class="check"><input id="allowLateSubmission" type="checkbox"
+                            th:field="*{allowLateSubmission}"><label for="allowLateSubmission">Allow late
+                            submissions</label></div>
+                </div>
+            </section>
+            <div class="footer">
+                <a class="button secondary" th:href="@{/assessments}">Cancel</a>
+                <button class="button" type="submit">Save assessment</button>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>
